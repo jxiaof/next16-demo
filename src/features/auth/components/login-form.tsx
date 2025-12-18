@@ -76,19 +76,19 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5 animate-fade-in">
       {globalError && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+        <div className="rounded-xl bg-destructive/10 p-4 text-sm text-destructive animate-slide-up">
           {globalError}
         </div>
       )}
       {successMessage && (
-        <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-600 dark:text-green-400">
+        <div className="rounded-xl bg-success/10 p-4 text-sm text-success animate-slide-up">
           {successMessage}
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-2 animate-slide-up stagger-1">
         <label htmlFor="username" className="text-sm font-medium">
           用户名
         </label>
@@ -102,18 +102,18 @@ export function LoginForm() {
           className={errors.username ? "border-destructive" : ""}
         />
         {errors.username && (
-          <p className="text-xs text-destructive">{errors.username}</p>
+          <p className="text-xs text-destructive animate-fade-in">{errors.username}</p>
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 animate-slide-up stagger-2">
         <div className="flex items-center justify-between">
           <label htmlFor="password" className="text-sm font-medium">
             密码
           </label>
           <Link
             href="/forgot-password"
-            className="text-xs text-muted-foreground hover:text-primary"
+            className="text-xs text-muted-foreground hover:text-primary transition-colors"
           >
             忘记密码？
           </Link>
@@ -128,13 +128,15 @@ export function LoginForm() {
           className={errors.password ? "border-destructive" : ""}
         />
         {errors.password && (
-          <p className="text-xs text-destructive">{errors.password}</p>
+          <p className="text-xs text-destructive animate-fade-in">{errors.password}</p>
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? "登录中..." : "登录"}
-      </Button>
+      <div className="animate-slide-up stagger-3 pt-2">
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? "登录中..." : "登录"}
+        </Button>
+      </div>
     </form>
   );
 }

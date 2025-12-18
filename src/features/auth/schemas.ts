@@ -1,15 +1,15 @@
 import { z } from "zod";
 
+// 简化的密码规则：只需要 6 位即可
+const passwordSchema = z.string().min(6, "密码至少 6 个字符");
+
 // 登录表单 Schema
 export const loginSchema = z.object({
   username: z
     .string()
     .min(1, "用户名不能为空")
     .min(3, "用户名至少 3 个字符"),
-  password: z
-    .string()
-    .min(1, "密码不能为空")
-    .min(4, "密码至少 4 个字符"),
+  password: passwordSchema,
 });
 
 // 注册表单 Schema
@@ -25,13 +25,7 @@ export const registerSchema = z
       .string()
       .min(1, "邮箱不能为空")
       .email("请输入有效的邮箱地址"),
-    password: z
-      .string()
-      .min(1, "密码不能为空")
-      .min(8, "密码至少 8 个字符")
-      .regex(/[A-Z]/, "密码必须包含至少一个大写字母")
-      .regex(/[a-z]/, "密码必须包含至少一个小写字母")
-      .regex(/[0-9]/, "密码必须包含至少一个数字"),
+    password: passwordSchema,
     confirmPassword: z.string().min(1, "请确认密码"),
   })
   .refine((data) => data.password === data.confirmPassword, {

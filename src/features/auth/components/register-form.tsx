@@ -72,12 +72,12 @@ export function RegisterForm() {
   // 注册成功后显示成功页面
   if (isSuccess) {
     return (
-      <div className="space-y-6 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
-          <CheckCircle className="h-8 w-8 text-green-500" />
+      <div className="space-y-6 text-center animate-scale-in">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success/10 animate-bounce-in">
+          <CheckCircle className="h-8 w-8 text-success" />
         </div>
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-green-600 dark:text-green-400">
+          <h3 className="text-lg font-semibold text-success">
             注册成功！
           </h3>
           <p className="text-sm text-muted-foreground">
@@ -92,14 +92,14 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5 animate-fade-in">
       {globalError && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+        <div className="rounded-xl bg-destructive/10 p-4 text-sm text-destructive animate-slide-up">
           {globalError}
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-2 animate-slide-up stagger-1">
         <label htmlFor="username" className="text-sm font-medium">
           用户名
         </label>
@@ -113,11 +113,11 @@ export function RegisterForm() {
           className={errors.username ? "border-destructive" : ""}
         />
         {errors.username && (
-          <p className="text-xs text-destructive">{errors.username}</p>
+          <p className="text-xs text-destructive animate-fade-in">{errors.username}</p>
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 animate-slide-up stagger-2">
         <label htmlFor="email" className="text-sm font-medium">
           邮箱
         </label>
@@ -131,29 +131,29 @@ export function RegisterForm() {
           className={errors.email ? "border-destructive" : ""}
         />
         {errors.email && (
-          <p className="text-xs text-destructive">{errors.email}</p>
+          <p className="text-xs text-destructive animate-fade-in">{errors.email}</p>
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 animate-slide-up stagger-3">
         <label htmlFor="password" className="text-sm font-medium">
           密码
         </label>
         <Input
           id="password"
           type="password"
-          placeholder="至少 8 位，含大小写字母和数字"
+          placeholder="至少 6 个字符"
           value={formData.password}
           onChange={(e) => handleChange("password", e.target.value)}
           disabled={isPending}
           className={errors.password ? "border-destructive" : ""}
         />
         {errors.password && (
-          <p className="text-xs text-destructive">{errors.password}</p>
+          <p className="text-xs text-destructive animate-fade-in">{errors.password}</p>
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 animate-slide-up stagger-4">
         <label htmlFor="confirmPassword" className="text-sm font-medium">
           确认密码
         </label>
@@ -167,13 +167,15 @@ export function RegisterForm() {
           className={errors.confirmPassword ? "border-destructive" : ""}
         />
         {errors.confirmPassword && (
-          <p className="text-xs text-destructive">{errors.confirmPassword}</p>
+          <p className="text-xs text-destructive animate-fade-in">{errors.confirmPassword}</p>
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? "注册中..." : "注册"}
-      </Button>
+      <div className="animate-slide-up stagger-5 pt-2">
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? "注册中..." : "注册"}
+        </Button>
+      </div>
     </form>
   );
 }

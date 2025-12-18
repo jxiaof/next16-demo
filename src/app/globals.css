@@ -4,35 +4,30 @@
 
 /*
  * ============================================
- * 企业级配色系统设计规范 v1.0
+ * 现代清新配色系统 v2.0
  * ============================================
  * 
  * 【设计原则】
- * 1. 专业严谨：以蓝色为主色调，传达信任与专业
- * 2. 高可读性：文本与背景对比度 >= 4.5:1 (WCAG AA)
- * 3. 层次分明：通过灰度变化区分内容层级
- * 4. 状态明确：成功/警告/错误使用标准语义色
- * 
- * 【色彩体系】
- * - Primary (主色): 企业蓝 - 用于主要操作、品牌标识
- * - Secondary (次要): 中性灰 - 用于次要操作、辅助信息
- * - Accent (强调): 浅蓝 - 用于悬停、选中状态
- * - Muted (柔和): 浅灰 - 用于背景、禁用状态
- * - Destructive (危险): 红色 - 用于删除、错误提示
- * 
- * 【语义色】(通过 CSS 变量扩展)
- * - Success: 绿色 #16a34a - 成功状态
- * - Warning: 琥珀色 #d97706 - 警告状态  
- * - Error: 红色 #dc2626 - 错误状态
- * - Info: 蓝色 #2563eb - 信息提示
- * 
- * 【圆角规范】
- * - radius-sm: 4px - 小型元素 (标签、徽章)
- * - radius-md: 6px - 中型元素 (输入框、按钮)
- * - radius-lg: 8px - 大型元素 (卡片、模态框)
+ * 1. 清新现代：柔和的蓝紫色调，轻松愉悦
+ * 2. 高可读性：文本与背景对比度优良
+ * 3. 层次分明：通过色彩区分内容层级
+ * 4. 动画流畅：统一的过渡动画效果
  * 
  * ============================================
  */
+
+/* 全局动画变量 */
+:root {
+  /* 动画时长 */
+  --transition-fast: 150ms;
+  --transition-normal: 200ms;
+  --transition-slow: 300ms;
+  
+  /* 缓动函数 */
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -69,7 +64,7 @@
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
   
-  /* 图表色 - 企业蓝色系 */
+  /* 图表色 */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -86,155 +81,153 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   
-  /* 圆角系统 */
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
+  /* 圆角系统 - 更现代的大圆角 */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
 }
 
 /* ============================================
- * 亮色主题 (Light Mode)
- * 专业、干净、高可读性
+ * 亮色主题 (Light Mode) - 清新现代风格
  * ============================================ */
 :root {
   /* 基础圆角 */
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   
-  /* 背景与前景 */
-  --background: #ffffff;
-  --foreground: #0f172a;
+  /* 背景与前景 - 更柔和的白色 */
+  --background: #fafbfc;
+  --foreground: #1a1f36;
   
-  /* 主色 - 企业蓝 */
-  --primary: #1e40af;
+  /* 主色 - 清新蓝紫色 */
+  --primary: #6366f1;
   --primary-foreground: #ffffff;
   
-  /* 次要色 - 中性灰 */
+  /* 次要色 - 柔和灰 */
   --secondary: #f1f5f9;
-  --secondary-foreground: #334155;
+  --secondary-foreground: #475569;
   
-  /* 柔和色 - 用于背景和禁用 */
+  /* 柔和色 - 极淡灰 */
   --muted: #f8fafc;
   --muted-foreground: #64748b;
   
-  /* 强调色 - 浅蓝 */
-  --accent: #eff6ff;
-  --accent-foreground: #1e40af;
+  /* 强调色 - 淡紫色 */
+  --accent: #eef2ff;
+  --accent-foreground: #4f46e5;
   
-  /* 危险色 - 红色 */
-  --destructive: #dc2626;
+  /* 危险色 - 柔和红 */
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   
-  /* 卡片 */
+  /* 卡片 - 纯白 */
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #1a1f36;
   
   /* 弹出层 */
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
+  --popover-foreground: #1a1f36;
   
-  /* 边框与输入框 */
+  /* 边框与输入框 - 更淡的边框 */
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #3b82f6;
+  --ring: #6366f1;
   
-  /* 语义色 */
-  --success: #16a34a;
+  /* 语义色 - 更鲜艳活泼 */
+  --success: #10b981;
   --success-foreground: #ffffff;
-  --warning: #d97706;
+  --warning: #f59e0b;
   --warning-foreground: #ffffff;
-  --info: #2563eb;
+  --info: #3b82f6;
   --info-foreground: #ffffff;
   
-  /* 图表色 - 蓝色系渐变 */
-  --chart-1: #1e40af;
-  --chart-2: #3b82f6;
-  --chart-3: #60a5fa;
-  --chart-4: #93c5fd;
-  --chart-5: #bfdbfe;
+  /* 图表色 - 渐变色系 */
+  --chart-1: #6366f1;
+  --chart-2: #8b5cf6;
+  --chart-3: #a855f7;
+  --chart-4: #d946ef;
+  --chart-5: #ec4899;
   
   /* 侧边栏 */
   --sidebar: #f8fafc;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #1e40af;
+  --sidebar-foreground: #1a1f36;
+  --sidebar-primary: #6366f1;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eff6ff;
-  --sidebar-accent-foreground: #1e40af;
+  --sidebar-accent: #eef2ff;
+  --sidebar-accent-foreground: #4f46e5;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #3b82f6;
+  --sidebar-ring: #6366f1;
 }
 
 /* ============================================
- * 暗色主题 (Dark Mode)
- * 低对比度护眼，保持专业感
+ * 暗色主题 (Dark Mode) - 柔和护眼
  * ============================================ */
 .dark {
-  /* 背景与前景 */
-  --background: #0f172a;
-  --foreground: #f1f5f9;
+  /* 背景与前景 - 深蓝灰色，避免纯黑 */
+  --background: #0f1729;
+  --foreground: #e2e8f0;
   
-  /* 主色 - 亮蓝 (暗模式下提高亮度) */
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
+  /* 主色 - 亮紫蓝 */
+  --primary: #818cf8;
+  --primary-foreground: #0f1729;
   
   /* 次要色 */
   --secondary: #1e293b;
-  --secondary-foreground: #e2e8f0;
+  --secondary-foreground: #cbd5e1;
   
   /* 柔和色 */
   --muted: #1e293b;
   --muted-foreground: #94a3b8;
   
   /* 强调色 */
-  --accent: #1e3a5f;
-  --accent-foreground: #60a5fa;
+  --accent: #1e1b4b;
+  --accent-foreground: #a5b4fc;
   
   /* 危险色 */
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
+  --destructive: #f87171;
+  --destructive-foreground: #0f1729;
   
-  /* 卡片 */
-  --card: #1e293b;
-  --card-foreground: #f1f5f9;
+  /* 卡片 - 深灰蓝 */
+  --card: #1a2332;
+  --card-foreground: #e2e8f0;
   
   /* 弹出层 */
-  --popover: #1e293b;
-  --popover-foreground: #f1f5f9;
+  --popover: #1a2332;
+  --popover-foreground: #e2e8f0;
   
   /* 边框与输入框 */
   --border: #334155;
   --input: #334155;
-  --ring: #3b82f6;
+  --ring: #818cf8;
   
   /* 语义色 */
-  --success: #22c55e;
-  --success-foreground: #ffffff;
-  --warning: #f59e0b;
-  --warning-foreground: #000000;
+  --success: #34d399;
+  --success-foreground: #0f1729;
+  --warning: #fbbf24;
+  --warning-foreground: #0f1729;
   --info: #60a5fa;
-  --info-foreground: #000000;
+  --info-foreground: #0f1729;
   
   /* 图表色 */
-  --chart-1: #3b82f6;
-  --chart-2: #60a5fa;
-  --chart-3: #93c5fd;
-  --chart-4: #6366f1;
-  --chart-5: #8b5cf6;
+  --chart-1: #818cf8;
+  --chart-2: #a78bfa;
+  --chart-3: #c084fc;
+  --chart-4: #e879f9;
+  --chart-5: #f472b6;
   
   /* 侧边栏 */
-  --sidebar: #0f172a;
-  --sidebar-foreground: #f1f5f9;
-  --sidebar-primary: #3b82f6;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1e3a5f;
-  --sidebar-accent-foreground: #60a5fa;
+  --sidebar: #0f1729;
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-primary: #818cf8;
+  --sidebar-primary-foreground: #0f1729;
+  --sidebar-accent: #1e1b4b;
+  --sidebar-accent-foreground: #a5b4fc;
   --sidebar-border: #334155;
-  --sidebar-ring: #3b82f6;
+  --sidebar-ring: #818cf8;
 }
 
 /* ============================================
- * 基础样式
+ * 基础样式与动画
  * ============================================ */
 @layer base {
   * {
@@ -255,12 +248,162 @@
   ::selection {
     @apply bg-primary/20 text-foreground;
   }
+  
+  /* 滚动条美化 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+  }
+}
+
+/* ============================================
+ * 动画关键帧
+ * ============================================ */
+
+/* 淡入动画 */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 向上滑入动画 */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 缩放进入动画 */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 弹跳动画 */
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 脉冲动画 */
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* 骨架屏闪烁 */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* ============================================
  * 工具类扩展
  * ============================================ */
 @layer utilities {
+  /* 动画类 */
+  .animate-fade-in {
+    animation: fade-in var(--transition-normal) var(--ease-out);
+  }
+  
+  .animate-slide-up {
+    animation: slide-up var(--transition-slow) var(--ease-out);
+  }
+  
+  .animate-scale-in {
+    animation: scale-in var(--transition-normal) var(--ease-spring);
+  }
+  
+  .animate-bounce-in {
+    animation: bounce-in 0.5s var(--ease-spring);
+  }
+  
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+  
+  /* 交错动画延迟 */
+  .stagger-1 { animation-delay: 50ms; }
+  .stagger-2 { animation-delay: 100ms; }
+  .stagger-3 { animation-delay: 150ms; }
+  .stagger-4 { animation-delay: 200ms; }
+  .stagger-5 { animation-delay: 250ms; }
+  
+  /* 骨架屏 */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--muted) 25%,
+      var(--border) 50%,
+      var(--muted) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  /* 卡片悬停效果 */
+  .card-hover {
+    transition: transform var(--transition-normal) var(--ease-out),
+                box-shadow var(--transition-normal) var(--ease-out);
+  }
+  
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .card-hover:hover {
+    box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.4);
+  }
+  
   /* 语义色工具类 */
   .text-success {
     color: var(--success);

@@ -7,15 +7,11 @@ import { sendPasswordChangedEmail } from "@/lib/email";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
+// 简化的密码校验：只需要 6 位即可
 const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "请输入当前密码"),
-    newPassword: z
-      .string()
-      .min(8, "新密码至少 8 个字符")
-      .regex(/[A-Z]/, "新密码必须包含至少一个大写字母")
-      .regex(/[a-z]/, "新密码必须包含至少一个小写字母")
-      .regex(/[0-9]/, "新密码必须包含至少一个数字"),
+    newPassword: z.string().min(6, "新密码至少 6 个字符"),
     confirmPassword: z.string().min(1, "请确认新密码"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {

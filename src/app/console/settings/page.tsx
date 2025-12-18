@@ -208,21 +208,24 @@ function ProfileForm({
           )}
         </FormItem>
 
-        {/* 编辑模式下的操作按钮 */}
+        {/* 编辑模式下的操作按钮 - 居中显示，大小一致 */}
         {isEditing && (
-          <div className="flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:justify-end">
+          <div className="flex items-center justify-center gap-4 pt-6">
             <Button
               type="button"
               variant="outline"
               onClick={handleCancel}
               disabled={isProfilePending}
+              className="min-w-[120px]"
             >
-              <X className="mr-2 h-4 w-4" />
               取消
             </Button>
-            <Button type="submit" disabled={isProfilePending}>
-              <Save className="mr-2 h-4 w-4" />
-              {isProfilePending ? "保存中..." : "保存更改"}
+            <Button
+              type="submit"
+              disabled={isProfilePending}
+              className="min-w-[120px]"
+            >
+              {isProfilePending ? "保存中..." : "确认更改"}
             </Button>
           </div>
         )}
@@ -361,7 +364,7 @@ function PasswordForm() {
             <Input
               id="newPassword"
               type="password"
-              placeholder="至少 8 位，含大小写字母和数字"
+              placeholder="至少 6 个字符"
               value={passwordData.newPassword}
               onChange={(e) =>
                 setPasswordData((prev) => ({
@@ -389,20 +392,23 @@ function PasswordForm() {
             />
           </FormItem>
 
-          {/* 操作按钮 */}
-          <div className="flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:justify-end">
+          {/* 操作按钮 - 居中显示，大小一致 */}
+          <div className="flex items-center justify-center gap-4 pt-6">
             <Button
               type="button"
               variant="outline"
               onClick={handleCancel}
               disabled={isPasswordPending}
+              className="min-w-[120px]"
             >
-              <X className="mr-2 h-4 w-4" />
               取消
             </Button>
-            <Button type="submit" disabled={isPasswordPending}>
-              <Lock className="mr-2 h-4 w-4" />
-              {isPasswordPending ? "修改中..." : "确认修改"}
+            <Button
+              type="submit"
+              disabled={isPasswordPending}
+              className="min-w-[120px]"
+            >
+              {isPasswordPending ? "修改中..." : "确认更改"}
             </Button>
           </div>
         </form>
