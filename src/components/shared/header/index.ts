@@ -2,3 +2,4 @@
 export { Navbar } from "./navbar";
 export { MobileNav } from "./mobile-nav";
 export { ThemeToggle } from "./theme-toggle";
+export { UserMenu } from "./user-menu";

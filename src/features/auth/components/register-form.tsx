@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { registerSchema, type RegisterFormData } from "../schemas";
+import { CheckCircle } from "lucide-react";
 
 interface FieldErrors {
   username?: string;
@@ -42,7 +44,9 @@ export function RegisterForm() {
 
     if (!result.success) {
       const fieldErrors: FieldErrors = {};
-      result.error.errors.forEach((err) => {
+      // Zod v4 使用 result.error.issues 而不是 result.error.errors
+      const issues = result.error.issues || result.error || [];
+      issues.forEach((err) => {
         const field = err.path[0] as keyof FieldErrors;
         if (!fieldErrors[field]) {
           fieldErrors[field] = err.message;
@@ -72,13 +76,30 @@ export function RegisterForm() {
     }
   };
 
+  // 注册成功后显示成功页面
+  if (successMessage) {
+    return (
+      <div className="space-y-6 text-center">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
+          <CheckCircle className="h-8 w-8 text-green-500" />
+        </div>
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold text-green-600 dark:text-green-400">
+            注册成功！
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            你的账户已创建成功，请前往登录页面登录。
+          </p>
+        </div>
+        <Link href="/login">
+          <Button className="w-full">前往登录</Button>
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {successMessage && (
-        <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-600 dark:text-green-400">
-          {successMessage}
-        </div>
-      )}
 
       <div className="space-y-2">
         <label htmlFor="username" className="text-sm font-medium">
