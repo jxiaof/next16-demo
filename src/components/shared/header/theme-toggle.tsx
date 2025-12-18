@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Moon, Sun } from "lucide-react";
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
 
-  // 初始化主题
-  useEffect(() => {
-    setMounted(true);
+  // 初始化主题 - 使用 useCallback 包装以避免直接在 effect 中 setState
+  const initializeTheme = useCallback(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
       .matches
@@ -19,6 +18,11 @@ export function ThemeToggle() {
     setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
   }, []);
+
+  useEffect(() => {
+    setMounted(true);
+    initializeTheme();
+  }, [initializeTheme]);
 
   // 切换主题
   const toggleTheme = () => {
@@ -32,10 +36,10 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <button
-        className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground"
+        className="rounded-md p-2 hover:bg-accent"
         aria-label="Toggle theme"
       >
-        <Sun className="h-4 w-4" />
+        <Sun className="h-5 w-5" />
       </button>
     );
   }
@@ -43,13 +47,13 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+      className="rounded-md p-2 hover:bg-accent"
       aria-label="Toggle theme"
     >
       {theme === "light" ? (
-        <Moon className="h-4 w-4" />
+        <Moon className="h-5 w-5" />
       ) : (
-        <Sun className="h-4 w-4" />
+        <Sun className="h-5 w-5" />
       )}
     </button>
   );

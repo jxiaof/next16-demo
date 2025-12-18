@@ -1,130 +1,471 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useTransition, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import {
+  User,
+  Lock,
+  ArrowLeft,
+  CheckCircle,
+  ChevronRight,
+  Pencil,
+} from "lucide-react";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 import { useAuth } from "@/features/auth";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui";
-import { LayoutDashboard, Settings, User, FileText, BarChart3, Bell } from "lucide-react";
+import {
+  updateProfileAction,
+  changePasswordAction,
+} from "@/features/auth/actions";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
-const menuItems = [
+// 设置项 Tab 配置
+type SettingsTab = "profile" | "password";
+
+interface TabConfig {
+  id: SettingsTab;
+  label: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  iconBgColor: string;
+  iconColor: string;
+}
+
+const tabs: TabConfig[] = [
   {
-    title: "仪表盘",
-    description: "查看整体数据概览",
-    icon: BarChart3,
-    href: "/console",
+    id: "profile",
+    label: "个人资料",
+    description: "管理你的用户名和邮箱",
+    icon: User,
+    iconBgColor: "bg-primary/10",
+    iconColor: "text-primary",
   },
   {
-    title: "内容管理",
-    description: "管理你的内容和文章",
-    icon: FileText,
-    href: "/console/content",
-  },
-  {
-    title: "个人设置",
-    description: "修改账户信息和偏好",
-    icon: Settings,
-    href: "/console/settings",
-  },
-  {
-    title: "通知中心",
-    description: "查看系统通知和消息",
-    icon: Bell,
-    href: "/console/notifications",
+    id: "password",
+    label: "修改密码",
+    description: "更新你的登录密码",
+    icon: Lock,
+    iconBgColor: "bg-orange-500/10",
+    iconColor: "text-orange-500",
   },
 ];
 
-export default function ConsolePage() {
-  const router = useRouter();
-  const { isAuthenticated, user, isLoading } = useAuth();
+// 表单项组件 - 统一布局
+function FormItem({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="grid gap-2 sm:grid-cols-[140px_1fr] sm:items-center">
+      <label className="text-sm font-medium text-muted-foreground">
+        {label}
+      </label>
+      <div className="flex-1">{children}</div>
+    </div>
+  );
+}
 
-  // 未登录时重定向到登录页
+// 个人资料表单组件
+function ProfileForm({
+  user,
+  onSuccess,
+}: {
+  user: { username: string; email: string };
+  onSuccess: () => Promise<void>;
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  
+  // 使用 useMemo 来初始化状态，避免在 useEffect 中 setState
+  const initialData = useMemo(() => ({
+    username: user.username,
+    email: user.email,
+  }), [user.username, user.email]);
+  
+  const [profileData, setProfileData] = useState(initialData);
+  const [profileError, setProfileError] = useState("");
+  const [profileSuccess, setProfileSuccess] = useState("");
+  const [isProfilePending, startProfileTransition] = useTransition();
+
+  // 当 user 变化时，通过 key 重置组件或使用派生状态
+  // 这里使用 useMemo 的方式，当 initialData 变化时更新 profileData
+  useEffect(() => {
+    if (!isEditing) {
+      setProfileData(initialData);
+    }
+  }, [initialData, isEditing]);
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setProfileError("");
+    setProfileSuccess("");
+    setProfileData(initialData);
+  };
+
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileError("");
+    setProfileSuccess("");
+
+    startProfileTransition(async () => {
+      const result = await updateProfileAction(profileData);
+
+      if (result.success) {
+        setProfileSuccess(result.message);
+        setIsEditing(false);
+        await onSuccess();
+      } else {
+        setProfileError(result.message);
+      }
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* 标题和操作按钮 */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold">个人资料</h2>
+          <p className="text-sm text-muted-foreground">
+            管理你的基本账户信息
+          </p>
+        </div>
+        {!isEditing && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsEditing(true)}
+            className="shrink-0"
+          >
+            <Pencil className="mr-2 h-4 w-4" />
+            修改
+          </Button>
+        )}
+      </div>
+
+      {/* 提示信息 */}
+      {profileError && (
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+          {profileError}
+        </div>
+      )}
+      {profileSuccess && (
+        <div className="flex items-center gap-2 rounded-md bg-green-500/10 p-3 text-sm text-green-600 dark:text-green-400">
+          <CheckCircle className="h-4 w-4" />
+          {profileSuccess}
+        </div>
+      )}
+
+      {/* 表单内容 */}
+      <form onSubmit={handleProfileSubmit} className="space-y-4">
+        <FormItem label="用户名">
+          {isEditing ? (
+            <Input
+              id="username"
+              type="text"
+              value={profileData.username}
+              onChange={(e) =>
+                setProfileData((prev) => ({
+                  ...prev,
+                  username: e.target.value,
+                }))
+              }
+              disabled={isProfilePending}
+              className="max-w-md"
+            />
+          ) : (
+            <p className="py-2 text-sm">{user.username}</p>
+          )}
+        </FormItem>
+
+        <FormItem label="邮箱">
+          {isEditing ? (
+            <Input
+              id="email"
+              type="email"
+              value={profileData.email}
+              onChange={(e) =>
+                setProfileData((prev) => ({
+                  ...prev,
+                  email: e.target.value,
+                }))
+              }
+              disabled={isProfilePending}
+              className="max-w-md"
+            />
+          ) : (
+            <p className="py-2 text-sm">{user.email}</p>
+          )}
+        </FormItem>
+
+        {/* 编辑模式下的操作按钮 */}
+        {isEditing && (
+          <div className="flex items-center justify-center gap-4 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancel}
+              disabled={isProfilePending}
+              className="min-w-[120px]"
+            >
+              取消
+            </Button>
+            <Button
+              type="submit"
+              disabled={isProfilePending}
+              className="min-w-[120px]"
+            >
+              {isProfilePending ? "保存中..." : "确认更改"}
+            </Button>
+          </div>
+        )}
+      </form>
+    </div>
+  );
+}
+
+// 修改密码表单组件
+function PasswordForm() {
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [isPasswordPending, startPasswordTransition] = useTransition();
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError("");
+    setPasswordSuccess("");
+
+    // 前端验证
+    if (passwordData.newPassword.length < 6) {
+      setPasswordError("新密码至少需要 6 个字符");
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError("两次输入的密码不一致");
+      return;
+    }
+
+    startPasswordTransition(async () => {
+      const result = await changePasswordAction(passwordData);
+
+      if (result.success) {
+        setPasswordSuccess(result.message);
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        setPasswordError(result.message);
+      }
+    });
+  };
+
+  const handleCancel = () => {
+    setPasswordData({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setPasswordError("");
+    setPasswordSuccess("");
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold">修改密码</h2>
+        <p className="text-sm text-muted-foreground">
+          为了账户安全，请定期更换密码
+        </p>
+      </div>
+
+      {passwordError && (
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+          {passwordError}
+        </div>
+      )}
+      {passwordSuccess && (
+        <div className="flex items-center gap-2 rounded-md bg-green-500/10 p-3 text-sm text-green-600 dark:text-green-400">
+          <CheckCircle className="h-4 w-4" />
+          {passwordSuccess}
+        </div>
+      )}
+
+      <form onSubmit={handlePasswordSubmit} className="space-y-4">
+        <FormItem label="当前密码">
+          <Input
+            id="currentPassword"
+            type="password"
+            value={passwordData.currentPassword}
+            onChange={(e) =>
+              setPasswordData((prev) => ({
+                ...prev,
+                currentPassword: e.target.value,
+              }))
+            }
+            disabled={isPasswordPending}
+            placeholder="请输入当前密码"
+            className="max-w-md"
+          />
+        </FormItem>
+
+        <FormItem label="新密码">
+          <Input
+            id="newPassword"
+            type="password"
+            value={passwordData.newPassword}
+            onChange={(e) =>
+              setPasswordData((prev) => ({
+                ...prev,
+                newPassword: e.target.value,
+              }))
+            }
+            disabled={isPasswordPending}
+            placeholder="至少 6 个字符"
+            className="max-w-md"
+          />
+        </FormItem>
+
+        <FormItem label="确认新密码">
+          <Input
+            id="confirmPassword"
+            type="password"
+            value={passwordData.confirmPassword}
+            onChange={(e) =>
+              setPasswordData((prev) => ({
+                ...prev,
+                confirmPassword: e.target.value,
+              }))
+            }
+            disabled={isPasswordPending}
+            placeholder="再次输入新密码"
+            className="max-w-md"
+          />
+        </FormItem>
+
+        <div className="flex items-center justify-center gap-4 pt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleCancel}
+            disabled={isPasswordPending}
+            className="min-w-[120px]"
+          >
+            取消
+          </Button>
+          <Button
+            type="submit"
+            disabled={isPasswordPending}
+            className="min-w-[120px]"
+          >
+            {isPasswordPending ? "保存中..." : "确认更改"}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default function SettingsPage() {
+  const router = useRouter();
+  const { isAuthenticated, user, isLoading, refreshUser } = useAuth();
+  const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+
+  // 未登录时重定向
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/login");
     }
   }, [isAuthenticated, isLoading, router]);
 
-  // 加载中或未登录时显示加载状态
-  if (isLoading || !isAuthenticated) {
+  // 加载中
+  if (isLoading || !isAuthenticated || !user) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-muted-foreground">正在检查登录状态...</p>
+        <p className="text-muted-foreground">正在加载...</p>
       </div>
     );
   }
 
+  // 渲染当前 Tab 内容
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "profile":
+        return <ProfileForm key={`${user.username}-${user.email}`} user={user} onSuccess={refreshUser} />;
+      case "password":
+        return <PasswordForm />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="space-y-8">
-      {/* 欢迎区域 */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
-            <User className="h-6 w-6" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold">欢迎回来，{user?.username}！</h1>
-            <p className="text-muted-foreground">这是你的控制台，管理你的所有内容</p>
-          </div>
+    <div className="space-y-6">
+      {/* 页面标题 */}
+      <div className="flex items-center gap-4">
+        <Link href="/console">
+          <Button variant="ghost" size="icon" className="shrink-0">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold">账户设置</h1>
+          <p className="text-sm text-muted-foreground">
+            管理你的账户信息和安全设置
+          </p>
         </div>
       </div>
 
-      {/* 快捷入口 */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {menuItems.map((item) => (
-          <Link key={item.href} href={item.href}>
-            <Card className="h-full transition-colors hover:bg-accent/50">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <item.icon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base">{item.title}</CardTitle>
-                    <CardDescription>{item.description}</CardDescription>
-                  </div>
+      {/* 设置内容 */}
+      <div className="flex flex-col gap-6 lg:flex-row">
+        {/* 侧边栏 - Tab 导航 */}
+        <aside className="w-full shrink-0 lg:w-64">
+          <nav className="space-y-1 rounded-lg border bg-card p-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors",
+                  activeTab === tab.id
+                    ? "bg-accent text-accent-foreground"
+                    : "hover:bg-muted"
+                )}
+              >
+                <div className={cn("rounded-md p-1.5", tab.iconBgColor)}>
+                  <tab.icon className={cn("h-4 w-4", tab.iconColor)} />
                 </div>
-              </CardHeader>
-            </Card>
-          </Link>
-        ))}
-      </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{tab.label}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {tab.description}
+                  </p>
+                </div>
+                <ChevronRight
+                  className={cn(
+                    "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
+                    activeTab === tab.id && "text-foreground"
+                  )}
+                />
+              </button>
+            ))}
+          </nav>
+        </aside>
 
-      {/* 统计卡片 */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>总浏览量</CardDescription>
-            <CardTitle className="text-3xl">12,345</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-500">+12%</span> 较上月
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>内容数量</CardDescription>
-            <CardTitle className="text-3xl">48</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-500">+3</span> 本月新增
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>订阅用户</CardDescription>
-            <CardTitle className="text-3xl">1,024</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-500">+8%</span> 较上月
-            </p>
-          </CardContent>
-        </Card>
+        {/* 主内容区域 */}
+        <main className="flex-1 rounded-lg border bg-card p-6">
+          {renderTabContent()}
+        </main>
       </div>
     </div>
   );
