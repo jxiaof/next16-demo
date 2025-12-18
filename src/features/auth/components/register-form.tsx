@@ -44,7 +44,7 @@ export function RegisterForm() {
 
     if (!result.success) {
       const fieldErrors: FieldErrors = {};
-      // Zod v4 使用 result.error.issues 而不是 result.error.errors
+      // Zod v4 使用 result.error.issues 而不是 result.error
       const issues = result.error.issues || result.error || [];
       issues.forEach((err) => {
         const field = err.path[0] as keyof FieldErrors;
