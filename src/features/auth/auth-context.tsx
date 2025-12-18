@@ -9,64 +9,54 @@ import {
   type ReactNode,
 } from "react";
 import type { User, AuthState } from "./types";
+import { getCurrentUser } from "./actions";
 
 interface AuthContextType extends AuthState {
   login: (user: User) => void;
   logout: () => void;
+  refreshUser: () => Promise<void>;
+  isLoading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const AUTH_STORAGE_KEY = "coconut_auth";
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     isAuthenticated: false,
   });
-  const [isHydrated, setIsHydrated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // 从 localStorage 恢复登录状态
-  useEffect(() => {
-    const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (stored) {
-      try {
-        const user = JSON.parse(stored) as User;
-        setAuthState({ user, isAuthenticated: true });
-      } catch {
-        localStorage.removeItem(AUTH_STORAGE_KEY);
-      }
+  // 从服务器获取当前用户状态
+  const refreshUser = useCallback(async () => {
+    try {
+      const user = await getCurrentUser();
+      setAuthState({
+        user,
+        isAuthenticated: !!user,
+      });
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+      setAuthState({ user: null, isAuthenticated: false });
+    } finally {
+      setIsLoading(false);
     }
-    setIsHydrated(true);
   }, []);
 
-  // 登录
+  // 初始化时获取用户状态
+  useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
+
+  // 登录（更新本地状态）
   const login = useCallback((user: User) => {
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
     setAuthState({ user, isAuthenticated: true });
   }, []);
 
-  // 登出
+  // 登出（清除本地状态）
   const logout = useCallback(() => {
-    localStorage.removeItem(AUTH_STORAGE_KEY);
     setAuthState({ user: null, isAuthenticated: false });
   }, []);
-
-  // 防止 SSR 水合不匹配
-  if (!isHydrated) {
-    return (
-      <AuthContext.Provider
-        value={{
-          user: null,
-          isAuthenticated: false,
-          login,
-          logout,
-        }}
-      >
-        {children}
-      </AuthContext.Provider>
-    );
-  }
 
   return (
     <AuthContext.Provider
@@ -74,6 +64,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ...authState,
         login,
         logout,
+        refreshUser,
+        isLoading,
       }}
     >
       {children}
@@ -83,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;

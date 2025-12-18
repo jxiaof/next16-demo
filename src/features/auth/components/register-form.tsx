@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useState, useTransition } from "react";
+import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { registerSchema, type RegisterFormData } from "../schemas";
-import { CheckCircle } from "lucide-react";
+import { registerAction } from "../actions";
 
 interface FieldErrors {
   username?: string;
@@ -15,6 +16,8 @@ interface FieldErrors {
 }
 
 export function RegisterForm() {
+  const [isPending, startTransition] = useTransition();
+
   const [formData, setFormData] = useState<RegisterFormData>({
     username: "",
     email: "",
@@ -22,30 +25,28 @@ export function RegisterForm() {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [globalError, setGlobalError] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleChange = (field: keyof RegisterFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // 清除该字段的错误
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
-    setSuccessMessage("");
+    setGlobalError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-    setSuccessMessage("");
+    setGlobalError("");
 
-    // 使用 Zod 进行表单校验
-    const result = registerSchema.safeParse(formData);
-
-    if (!result.success) {
+    // 前端校验
+    const validationResult = registerSchema.safeParse(formData);
+    if (!validationResult.success) {
       const fieldErrors: FieldErrors = {};
-      // Zod v4 使用 result.error.issues 而不是 result.error
-      const issues = result.error.issues || result.error || [];
+      const issues =
+        validationResult.error.issues || validationResult.error.errors || [];
       issues.forEach((err) => {
         const field = err.path[0] as keyof FieldErrors;
         if (!fieldErrors[field]) {
@@ -56,28 +57,20 @@ export function RegisterForm() {
       return;
     }
 
-    setIsLoading(true);
+    // 调用 Server Action
+    startTransition(async () => {
+      const result = await registerAction(formData);
 
-    try {
-      // 模拟 API 调用
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      // 校验通过，显示注册成功
-      setSuccessMessage("注册成功！请前往登录页面登录。");
-      // 重置表单
-      setFormData({
-        username: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+      if (result.success) {
+        setIsSuccess(true);
+      } else {
+        setGlobalError(result.message);
+      }
+    });
   };
 
   // 注册成功后显示成功页面
-  if (successMessage) {
+  if (isSuccess) {
     return (
       <div className="space-y-6 text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
@@ -100,6 +93,11 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {globalError && (
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+          {globalError}
+        </div>
+      )}
 
       <div className="space-y-2">
         <label htmlFor="username" className="text-sm font-medium">
@@ -111,7 +109,7 @@ export function RegisterForm() {
           placeholder="3-20 个字符，字母数字下划线"
           value={formData.username}
           onChange={(e) => handleChange("username", e.target.value)}
-          disabled={isLoading}
+          disabled={isPending}
           className={errors.username ? "border-destructive" : ""}
         />
         {errors.username && (
@@ -129,7 +127,7 @@ export function RegisterForm() {
           placeholder="your@email.com"
           value={formData.email}
           onChange={(e) => handleChange("email", e.target.value)}
-          disabled={isLoading}
+          disabled={isPending}
           className={errors.email ? "border-destructive" : ""}
         />
         {errors.email && (
@@ -147,7 +145,7 @@ export function RegisterForm() {
           placeholder="至少 8 位，含大小写字母和数字"
           value={formData.password}
           onChange={(e) => handleChange("password", e.target.value)}
-          disabled={isLoading}
+          disabled={isPending}
           className={errors.password ? "border-destructive" : ""}
         />
         {errors.password && (
@@ -165,7 +163,7 @@ export function RegisterForm() {
           placeholder="再次输入密码"
           value={formData.confirmPassword}
           onChange={(e) => handleChange("confirmPassword", e.target.value)}
-          disabled={isLoading}
+          disabled={isPending}
           className={errors.confirmPassword ? "border-destructive" : ""}
         />
         {errors.confirmPassword && (
@@ -173,9 +171,10 @@ export function RegisterForm() {
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "注册中..." : "注册"}
+      <Button type="submit" className="w-full" disabled={isPending}>
+        {isPending ? "注册中..." : "注册"}
       </Button>
     </form>
   );
 }
+

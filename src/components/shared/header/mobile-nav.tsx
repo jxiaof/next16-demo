@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import {
   Menu,
@@ -15,6 +15,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useAuth } from "@/features/auth";
+import { logoutAction } from "@/features/auth/actions";
 
 const navLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -25,11 +26,15 @@ const navLinks = [
 
 export function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const { isAuthenticated, user, logout } = useAuth();
 
   const handleLogout = () => {
-    logout();
     setIsOpen(false);
+    startTransition(async () => {
+      logout();
+      await logoutAction();
+    });
   };
 
   return (
@@ -66,7 +71,7 @@ export function MobileNav() {
                 </Link>
               ))}
               <hr className="my-2 border-border" />
-              
+
               {isAuthenticated ? (
                 <>
                   {/* 用户信息 */}
@@ -83,10 +88,11 @@ export function MobileNav() {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-accent"
+                    disabled={isPending}
+                    className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-accent disabled:opacity-50"
                   >
                     <LogOut className="h-4 w-4 text-muted-foreground" />
-                    登出
+                    {isPending ? "登出中..." : "登出"}
                   </button>
                 </>
               ) : (
@@ -116,3 +122,4 @@ export function MobileNav() {
     </>
   );
 }
+

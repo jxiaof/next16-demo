@@ -36,17 +36,17 @@ const menuItems = [
 
 export default function ConsolePage() {
   const router = useRouter();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading } = useAuth();
 
   // 未登录时重定向到登录页
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoading && !isAuthenticated) {
       router.push("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isLoading, router]);
 
-  // 未登录时显示加载状态
-  if (!isAuthenticated) {
+  // 加载中或未登录时显示加载状态
+  if (isLoading || !isAuthenticated) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-muted-foreground">正在检查登录状态...</p>

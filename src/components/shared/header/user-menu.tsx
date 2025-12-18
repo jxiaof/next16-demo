@@ -1,13 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useTransition } from "react";
 import Link from "next/link";
-import { User, LayoutDashboard, Settings, LogOut, ChevronDown } from "lucide-react";
+import {
+  User,
+  LayoutDashboard,
+  Settings,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
 import { useAuth } from "@/features/auth";
+import { logoutAction } from "@/features/auth/actions";
 
 export function UserMenu() {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 点击外部关闭菜单
@@ -24,7 +32,10 @@ export function UserMenu() {
 
   const handleLogout = () => {
     setIsOpen(false);
-    logout();
+    startTransition(async () => {
+      logout(); // 先清除本地状态
+      await logoutAction(); // 再清除服务器会话
+    });
   };
 
   return (
@@ -37,8 +48,12 @@ export function UserMenu() {
         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <User className="h-4 w-4" />
         </div>
-        <span className="max-w-[80px] truncate font-medium">{user?.username}</span>
-        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <span className="max-w-[80px] truncate font-medium">
+          {user?.username}
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {/* 下拉菜单 */}
@@ -74,10 +89,11 @@ export function UserMenu() {
           <div className="border-t p-1">
             <button
               onClick={handleLogout}
-              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"
+              disabled={isPending}
+              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
             >
               <LogOut className="h-4 w-4" />
-              退出登录
+              {isPending ? "登出中..." : "退出登录"}
             </button>
           </div>
         </div>
@@ -85,3 +101,4 @@ export function UserMenu() {
     </div>
   );
 }
+

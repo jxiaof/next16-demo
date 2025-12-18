@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { loginSchema, type LoginFormData } from "../schemas";
 import { useAuth } from "../auth-context";
+import { loginAction } from "../actions";
 
 interface FieldErrors {
   username?: string;
@@ -16,18 +17,18 @@ interface FieldErrors {
 export function LoginForm() {
   const router = useRouter();
   const { login } = useAuth();
+  const [isPending, startTransition] = useTransition();
+
   const [formData, setFormData] = useState<LoginFormData>({
     username: "",
     password: "",
   });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [globalError, setGlobalError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (field: keyof LoginFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // 清除该字段的错误
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
@@ -41,12 +42,13 @@ export function LoginForm() {
     setGlobalError("");
     setSuccessMessage("");
 
-    // 使用 Zod 进行表单校验
-    const result = loginSchema.safeParse(formData);
-
-    if (!result.success) {
+    // 前端校验
+    const validationResult = loginSchema.safeParse(formData);
+    if (!validationResult.success) {
       const fieldErrors: FieldErrors = {};
-      result.error.errors.forEach((err) => {
+      const issues =
+        validationResult.error.issues || validationResult.error.errors || [];
+      issues.forEach((err) => {
         const field = err.path[0] as keyof FieldErrors;
         if (!fieldErrors[field]) {
           fieldErrors[field] = err.message;
@@ -56,29 +58,21 @@ export function LoginForm() {
       return;
     }
 
-    setIsLoading(true);
+    // 调用 Server Action
+    startTransition(async () => {
+      const result = await loginAction(formData);
 
-    try {
-      // 模拟 API 调用
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      // 登录验证：只有 admin/admin 才能成功
-      if (formData.username === "admin" && formData.password === "admin") {
-        login({
-          id: "1",
-          username: "admin",
-          email: "admin@example.com",
-        });
+      if (result.success && result.user) {
+        login(result.user);
         setSuccessMessage("登录成功！正在跳转...");
         setTimeout(() => {
           router.push("/console");
-        }, 1000);
+          router.refresh();
+        }, 500);
       } else {
-        setGlobalError("用户名或密码错误");
+        setGlobalError(result.message);
       }
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   return (
@@ -104,7 +98,7 @@ export function LoginForm() {
           placeholder="请输入用户名"
           value={formData.username}
           onChange={(e) => handleChange("username", e.target.value)}
-          disabled={isLoading}
+          disabled={isPending}
           className={errors.username ? "border-destructive" : ""}
         />
         {errors.username && (
@@ -130,7 +124,7 @@ export function LoginForm() {
           placeholder="请输入密码"
           value={formData.password}
           onChange={(e) => handleChange("password", e.target.value)}
-          disabled={isLoading}
+          disabled={isPending}
           className={errors.password ? "border-destructive" : ""}
         />
         {errors.password && (
@@ -138,13 +132,10 @@ export function LoginForm() {
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "登录中..." : "登录"}
+      <Button type="submit" className="w-full" disabled={isPending}>
+        {isPending ? "登录中..." : "登录"}
       </Button>
-
-      <p className="text-center text-xs text-muted-foreground">
-        提示：使用 admin / admin 登录
-      </p>
     </form>
   );
 }
+
