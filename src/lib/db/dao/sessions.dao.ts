@@ -1,4 +1,4 @@
-import { eq, and, lt } from "drizzle-orm";
+import { eq, and, lt, gt } from "drizzle-orm";
 import { db } from "../index";
 import { sessions, type Session, type NewSession } from "../schema";
 
