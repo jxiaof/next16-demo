@@ -11,7 +11,10 @@ import {
   CreditCard,
   LogIn,
   UserPlus,
+  LayoutDashboard,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "@/features/auth";
 
 const navLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -22,6 +25,12 @@ const navLinks = [
 
 export function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -57,22 +66,49 @@ export function MobileNav() {
                 </Link>
               ))}
               <hr className="my-2 border-border" />
-              <Link
-                href="/login"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-accent"
-              >
-                <LogIn className="h-4 w-4 text-muted-foreground" />
-                登录
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground"
-              >
-                <UserPlus className="h-4 w-4" />
-                注册
-              </Link>
+              
+              {isAuthenticated ? (
+                <>
+                  {/* 用户信息 */}
+                  <div className="px-3 py-2 text-xs text-muted-foreground">
+                    当前用户: {user?.username}
+                  </div>
+                  <Link
+                    href="/console"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Console
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-accent"
+                  >
+                    <LogOut className="h-4 w-4 text-muted-foreground" />
+                    登出
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-accent"
+                  >
+                    <LogIn className="h-4 w-4 text-muted-foreground" />
+                    登录
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    注册
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </>

@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
-import { Home, ShoppingBag, FileText, CreditCard, User } from "lucide-react";
+import { Home, ShoppingBag, FileText, CreditCard, LayoutDashboard, LogOut } from "lucide-react";
 import { MobileNav } from "./mobile-nav";
 import { ThemeToggle } from "./theme-toggle";
+import { useAuth } from "@/features/auth";
 
 const navLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -11,8 +14,7 @@ const navLinks = [
 ];
 
 export function Navbar() {
-  // 模拟登录状态，实际项目中应从状态管理或 session 获取
-  const isLoggedIn = false;
+  const { isAuthenticated, user, logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -44,10 +46,24 @@ export function Navbar() {
           {/* 主题切换 */}
           <ThemeToggle />
 
-          {isLoggedIn ? (
-            <button className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
-              <User className="h-4 w-4" />
-            </button>
+          {isAuthenticated ? (
+            <div className="hidden items-center gap-2 md:flex">
+              <Link
+                href="/console"
+                className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Console
+              </Link>
+              <button
+                onClick={logout}
+                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                title={`当前用户: ${user?.username}`}
+              >
+                <LogOut className="h-4 w-4" />
+                登出
+              </button>
+            </div>
           ) : (
             <div className="hidden items-center gap-2 md:flex">
               <Link
