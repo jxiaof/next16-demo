@@ -1,4 +1,4 @@
-import { eq, and, gt } from "drizzle-orm";
+import { eq, and, lt } from "drizzle-orm";
 import { db } from "../index";
 import { sessions, type Session, type NewSession } from "../schema";
 
@@ -41,7 +41,7 @@ export const sessionsDao = {
   async deleteExpired(): Promise<number> {
     const result = await db
       .delete(sessions)
-      .where(gt(new Date(), sessions.expiresAt));
+      .where(lt(sessions.expiresAt, new Date()));
     return result.count;
   },
 };
