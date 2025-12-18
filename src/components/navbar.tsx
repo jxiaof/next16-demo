@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MobileNav } from "./mobile-nav";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -35,13 +36,11 @@ export function Navbar() {
         {/* 右侧操作区 */}
         <div className="flex items-center gap-3">
           {isLoggedIn ? (
-            /* 已登录 - 显示头像 */
             <button className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
               U
             </button>
           ) : (
-            /* 未登录 - 显示登录/注册 */
-            <>
+            <div className="hidden items-center gap-3 md:flex">
               <Link
                 href="/login"
                 className="text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -54,25 +53,11 @@ export function Navbar() {
               >
                 注册
               </Link>
-            </>
+            </div>
           )}
 
-          {/* 移动端菜单按钮 */}
-          <button className="flex h-8 w-8 items-center justify-center md:hidden">
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
+          {/* 移动端菜单 */}
+          <MobileNav />
         </div>
       </nav>
     </header>
