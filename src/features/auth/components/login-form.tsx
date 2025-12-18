@@ -47,7 +47,7 @@ export function LoginForm() {
     if (!validationResult.success) {
       const fieldErrors: FieldErrors = {};
       const issues =
-        validationResult.error.issues || validationResult.error.errors || [];
+        validationResult.error.issues || validationResult.error || [];
       issues.forEach((err) => {
         const field = err.path[0] as keyof FieldErrors;
         if (!fieldErrors[field]) {
