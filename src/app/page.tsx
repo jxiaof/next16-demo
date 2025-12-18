@@ -1,4 +1,10 @@
 import Link from "next/link";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 export default function Home() {
   const items = [
@@ -12,13 +18,13 @@ export default function Home() {
       <h1 className="text-2xl font-bold">首页</h1>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
-          <Link
-            key={item.id}
-            href={`/detail/${item.id}`}
-            className="block rounded-lg border p-4 transition-colors hover:border-primary"
-          >
-            <h2 className="font-medium">{item.title}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{item.desc}</p>
+          <Link key={item.id} href={`/detail/${item.id}`}>
+            <Card className="h-full transition-colors hover:border-zinc-400 dark:hover:border-zinc-600">
+              <CardHeader>
+                <CardTitle className="text-base">{item.title}</CardTitle>
+                <CardDescription>{item.desc}</CardDescription>
+              </CardHeader>
+            </Card>
           </Link>
         ))}
       </div>
