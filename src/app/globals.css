@@ -4,11 +4,11 @@
 
 /*
  * ============================================
- * 现代清新配色系统 v2.0
+ * 活力橙色配色系统 v2.0
  * ============================================
  * 
  * 【设计原则】
- * 1. 清新现代：柔和的蓝紫色调，轻松愉悦
+ * 1. 活力现代：鲜亮的橙色调，充满能量
  * 2. 高可读性：文本与背景对比度优良
  * 3. 层次分明：通过色彩区分内容层级
  * 4. 动画流畅：统一的过渡动画效果
@@ -90,31 +90,31 @@
 }
 
 /* ============================================
- * 亮色主题 (Light Mode) - 清新现代风格
+ * 亮色主题 (Light Mode) - 活力橙色风格
  * ============================================ */
 :root {
   /* 基础圆角 */
   --radius: 0.75rem;
   
-  /* 背景与前景 - 更柔和的白色 */
-  --background: #fafbfc;
+  /* 背景与前景 - 柔和暖白 */
+  --background: #fffbf7;
   --foreground: #1a1f36;
   
-  /* 主色 - 清新蓝紫色 */
-  --primary: #6366f1;
+  /* 主色 - 鲜亮橙色 */
+  --primary: #f97316;
   --primary-foreground: #ffffff;
   
   /* 次要色 - 柔和灰 */
-  --secondary: #f1f5f9;
+  --secondary: #f5f3f0;
   --secondary-foreground: #475569;
   
-  /* 柔和色 - 极淡灰 */
-  --muted: #f8fafc;
+  /* 柔和色 - 极淡暖灰 */
+  --muted: #faf8f5;
   --muted-foreground: #64748b;
   
-  /* 强调色 - 淡紫色 */
-  --accent: #eef2ff;
-  --accent-foreground: #4f46e5;
+  /* 强调色 - 淡橙色 */
+  --accent: #fff7ed;
+  --accent-foreground: #ea580c;
   
   /* 危险色 - 柔和红 */
   --destructive: #ef4444;
@@ -129,9 +129,9 @@
   --popover-foreground: #1a1f36;
   
   /* 边框与输入框 - 更淡的边框 */
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #6366f1;
+  --border: #e7e5e4;
+  --input: #e7e5e4;
+  --ring: #f97316;
   
   /* 语义色 - 更鲜艳活泼 */
   --success: #10b981;
@@ -141,89 +141,89 @@
   --info: #3b82f6;
   --info-foreground: #ffffff;
   
-  /* 图表色 - 渐变色系 */
-  --chart-1: #6366f1;
-  --chart-2: #8b5cf6;
-  --chart-3: #a855f7;
-  --chart-4: #d946ef;
-  --chart-5: #ec4899;
+  /* 图表色 - 橙色渐变色系 */
+  --chart-1: #f97316;
+  --chart-2: #fb923c;
+  --chart-3: #fdba74;
+  --chart-4: #fed7aa;
+  --chart-5: #ea580c;
   
   /* 侧边栏 */
-  --sidebar: #f8fafc;
+  --sidebar: #faf8f5;
   --sidebar-foreground: #1a1f36;
-  --sidebar-primary: #6366f1;
+  --sidebar-primary: #f97316;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eef2ff;
-  --sidebar-accent-foreground: #4f46e5;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #6366f1;
+  --sidebar-accent: #fff7ed;
+  --sidebar-accent-foreground: #ea580c;
+  --sidebar-border: #e7e5e4;
+  --sidebar-ring: #f97316;
 }
 
 /* ============================================
- * 暗色主题 (Dark Mode) - 柔和护眼
+ * 暗色主题 (Dark Mode) - 温暖护眼
  * ============================================ */
 .dark {
-  /* 背景与前景 - 深蓝灰色，避免纯黑 */
-  --background: #0f1729;
-  --foreground: #e2e8f0;
+  /* 背景与前景 - 深暖灰色，避免纯黑 */
+  --background: #18120d;
+  --foreground: #e7e5e4;
   
-  /* 主色 - 亮紫蓝 */
-  --primary: #818cf8;
-  --primary-foreground: #0f1729;
+  /* 主色 - 明亮橙色 */
+  --primary: #fb923c;
+  --primary-foreground: #18120d;
   
   /* 次要色 */
-  --secondary: #1e293b;
-  --secondary-foreground: #cbd5e1;
+  --secondary: #292524;
+  --secondary-foreground: #d6d3d1;
   
   /* 柔和色 */
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
+  --muted: #292524;
+  --muted-foreground: #a8a29e;
   
   /* 强调色 */
-  --accent: #1e1b4b;
-  --accent-foreground: #a5b4fc;
+  --accent: #431407;
+  --accent-foreground: #fed7aa;
   
   /* 危险色 */
   --destructive: #f87171;
-  --destructive-foreground: #0f1729;
+  --destructive-foreground: #18120d;
   
-  /* 卡片 - 深灰蓝 */
-  --card: #1a2332;
-  --card-foreground: #e2e8f0;
+  /* 卡片 - 深暖灰 */
+  --card: #1c1410;
+  --card-foreground: #e7e5e4;
   
   /* 弹出层 */
-  --popover: #1a2332;
-  --popover-foreground: #e2e8f0;
+  --popover: #1c1410;
+  --popover-foreground: #e7e5e4;
   
   /* 边框与输入框 */
-  --border: #334155;
-  --input: #334155;
-  --ring: #818cf8;
+  --border: #44403c;
+  --input: #44403c;
+  --ring: #fb923c;
   
   /* 语义色 */
   --success: #34d399;
-  --success-foreground: #0f1729;
+  --success-foreground: #18120d;
   --warning: #fbbf24;
-  --warning-foreground: #0f1729;
+  --warning-foreground: #18120d;
   --info: #60a5fa;
-  --info-foreground: #0f1729;
+  --info-foreground: #18120d;
   
   /* 图表色 */
-  --chart-1: #818cf8;
-  --chart-2: #a78bfa;
-  --chart-3: #c084fc;
-  --chart-4: #e879f9;
-  --chart-5: #f472b6;
+  --chart-1: #fb923c;
+  --chart-2: #fdba74;
+  --chart-3: #fed7aa;
+  --chart-4: #f97316;
+  --chart-5: #ea580c;
   
   /* 侧边栏 */
-  --sidebar: #0f1729;
-  --sidebar-foreground: #e2e8f0;
-  --sidebar-primary: #818cf8;
-  --sidebar-primary-foreground: #0f1729;
-  --sidebar-accent: #1e1b4b;
-  --sidebar-accent-foreground: #a5b4fc;
-  --sidebar-border: #334155;
-  --sidebar-ring: #818cf8;
+  --sidebar: #18120d;
+  --sidebar-foreground: #e7e5e4;
+  --sidebar-primary: #fb923c;
+  --sidebar-primary-foreground: #18120d;
+  --sidebar-accent: #431407;
+  --sidebar-accent-foreground: #fed7aa;
+  --sidebar-border: #44403c;
+  --sidebar-ring: #fb923c;
 }
 
 /* ============================================

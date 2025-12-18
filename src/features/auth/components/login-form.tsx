@@ -88,7 +88,7 @@ export function LoginForm() {
         </div>
       )}
 
-      <div className="space-y-2 animate-slide-up stagger-1">
+      <div className="space-y-2">
         <label htmlFor="username" className="text-sm font-medium">
           用户名
         </label>
@@ -106,7 +106,7 @@ export function LoginForm() {
         )}
       </div>
 
-      <div className="space-y-2 animate-slide-up stagger-2">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label htmlFor="password" className="text-sm font-medium">
             密码
@@ -132,7 +132,7 @@ export function LoginForm() {
         )}
       </div>
 
-      <div className="animate-slide-up stagger-3 pt-2">
+      <div className="pt-2">
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? "登录中..." : "登录"}
         </Button>

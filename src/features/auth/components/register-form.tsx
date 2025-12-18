@@ -99,7 +99,7 @@ export function RegisterForm() {
         </div>
       )}
 
-      <div className="space-y-2 animate-slide-up stagger-1">
+      <div className="space-y-2">
         <label htmlFor="username" className="text-sm font-medium">
           用户名
         </label>
@@ -117,7 +117,7 @@ export function RegisterForm() {
         )}
       </div>
 
-      <div className="space-y-2 animate-slide-up stagger-2">
+      <div className="space-y-2">
         <label htmlFor="email" className="text-sm font-medium">
           邮箱
         </label>
@@ -135,7 +135,7 @@ export function RegisterForm() {
         )}
       </div>
 
-      <div className="space-y-2 animate-slide-up stagger-3">
+      <div className="space-y-2">
         <label htmlFor="password" className="text-sm font-medium">
           密码
         </label>
@@ -153,7 +153,7 @@ export function RegisterForm() {
         )}
       </div>
 
-      <div className="space-y-2 animate-slide-up stagger-4">
+      <div className="space-y-2">
         <label htmlFor="confirmPassword" className="text-sm font-medium">
           确认密码
         </label>
@@ -171,7 +171,7 @@ export function RegisterForm() {
         )}
       </div>
 
-      <div className="animate-slide-up stagger-5 pt-2">
+      <div className="pt-2">
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? "注册中..." : "注册"}
         </Button>
