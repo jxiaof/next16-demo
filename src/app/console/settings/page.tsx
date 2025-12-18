@@ -5,12 +5,10 @@ import { useRouter } from "next/navigation";
 import {
   User,
   Lock,
-  Save,
   ArrowLeft,
   CheckCircle,
   ChevronRight,
   Pencil,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { Input } from "@/components/ui";
@@ -89,6 +87,7 @@ function ProfileForm({
   onSuccess: () => Promise<void>;
 }) {
   const [isEditing, setIsEditing] = useState(false);
+  // 直接使用 user 作为初始值，通过父组件的 key 来重置状态
   const [profileData, setProfileData] = useState({
     username: user.username,
     email: user.email,
@@ -96,13 +95,6 @@ function ProfileForm({
   const [profileError, setProfileError] = useState("");
   const [profileSuccess, setProfileSuccess] = useState("");
   const [isProfilePending, startProfileTransition] = useTransition();
-
-  useEffect(() => {
-    setProfileData({
-      username: user.username,
-      email: user.email,
-    });
-  }, [user]);
 
   const handleCancel = () => {
     setIsEditing(false);

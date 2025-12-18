@@ -16,7 +16,11 @@ const globalForDb = globalThis as unknown as {
   conn: postgres.Sql | undefined;
 };
 
-const conn = globalForDb.conn ?? postgres(getDatabaseUrl());
+// 生产环境配置 SSL，开发环境不需要
+const conn = globalForDb.conn ?? postgres(getDatabaseUrl(), {
+  ssl: process.env.NODE_ENV === "production" ? "require" : false,
+  max: 1, // Serverless 环境推荐设置为 1
+});
 
 if (process.env.NODE_ENV !== "production") {
   globalForDb.conn = conn;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition, useMemo } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   User,
@@ -78,31 +78,23 @@ function ProfileForm({
   onSuccess: () => Promise<void>;
 }) {
   const [isEditing, setIsEditing] = useState(false);
-  
-  // 使用 useMemo 来初始化状态，避免在 useEffect 中 setState
-  const initialData = useMemo(() => ({
+  // 直接使用 user 作为初始值，通过父组件的 key 来重置状态
+  const [profileData, setProfileData] = useState({
     username: user.username,
     email: user.email,
-  }), [user.username, user.email]);
-  
-  const [profileData, setProfileData] = useState(initialData);
+  });
   const [profileError, setProfileError] = useState("");
   const [profileSuccess, setProfileSuccess] = useState("");
   const [isProfilePending, startProfileTransition] = useTransition();
-
-  // 当 user 变化时，通过 key 重置组件或使用派生状态
-  // 这里使用 useMemo 的方式，当 initialData 变化时更新 profileData
-  useEffect(() => {
-    if (!isEditing) {
-      setProfileData(initialData);
-    }
-  }, [initialData, isEditing]);
 
   const handleCancel = () => {
     setIsEditing(false);
     setProfileError("");
     setProfileSuccess("");
-    setProfileData(initialData);
+    setProfileData({
+      username: user.username,
+      email: user.email,
+    });
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
