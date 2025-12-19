@@ -4,11 +4,22 @@ import "./globals.css";
 import { Navbar, Footer, ThemeProvider } from "@/components/shared";
 import { AuthProvider } from "@/features/auth";
 
+/**
+ * Geist Sans - 企业级无衬线字体
+ * 用作回退字体，补充系统原生字体的不足
+ * 仅加载 latin 子集以优化性能
+ * 
+ * 注: 中文文本由 CSS 中的回退链处理 (PingFang SC, Microsoft YaHei 等)
+ */
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
+/**
+ * Geist Mono - 等宽字体
+ * 用于代码块、表单数据、数值显示
+ */
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],

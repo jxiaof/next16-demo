@@ -42,3 +42,63 @@
 -   **文件/文件夹**: 小写横杠 (kebab-case)，如 `update-profile.ts`。
 -   **Actions**: 以 `Action` 结尾，如 `loginAction`。
 -   **DAO**: 以 `dao` 结尾，如 `usersDao`。
+
+## 4. 字体与排版规范
+
+### 4.1 字体族配置 (Font Family)
+
+采用分层回退机制，优先使用系统原生字体，避免外部字体加载带来的性能问题。
+
+**无衬线字体 (Sans-serif) - 用于标题、正文、UI 元素**
+- **iOS/macOS**: San Francisco, PingFang SC
+- **Windows**: Segoe UI, Microsoft YaHei  
+- **Android**: Roboto, Noto Sans CJK SC
+- **回退链**: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Simplified Chinese", sans-serif`
+
+**等宽字体 (Monospace) - 用于代码、表单数据、数值**
+- 回退链: `ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`
+
+### 4.2 字体渲染优化 (Rendering)
+
+在 `body` 标签中应用以下 CSS 优化，修复不同浏览器下的字体粗细不均和锯齿问题：
+
+```css
+body {
+  -webkit-font-smoothing: antialiased;  /* Mac 系统平滑 */
+  -moz-osx-font-smoothing: grayscale;   /* Firefox 平滑 */
+  text-rendering: optimizeLegibility;   /* 文本微调 */
+  -webkit-text-size-adjust: 100%;       /* 禁用移动端自动放大 */
+}
+```
+
+### 4.3 字阶与行高规范 (Typography Scale)
+
+采用 4px 为基数的倍数关系，确保视觉节奏严谨。所有样式通过 Tailwind CSS 工具类应用。
+
+| 等级 | 字号 | 行高 | 权重 | Tailwind 类 | 使用场景 |
+|-----|------|------|------|------------|----------|
+| **一级标题** | 32px | 1.2 | 600 | `text-3xl font-semibold leading-tight` | 页面主标题 |
+| **二级标题** | 24px | 1.3 | 600 | `text-2xl font-semibold leading-snug` | 模块标题 |
+| **三级标题** | 20px | 1.4 | 600 | `text-xl font-semibold` | 小组标题 |
+| **强调正文** | 16px | 1.5 | 500 | `text-base font-medium leading-relaxed` | 卡片内容 |
+| **标准正文** | 14px | 1.5 | 400 | `text-sm leading-relaxed` | 默认文本 |
+| **辅助文字** | 12px | 1.4 | 400 | `text-xs leading-normal` | 表单提示、页脚 |
+
+**重要 🔴**: 中文环境建议使用 `font-semibold (600)` 而非 `font-bold (700)`，以防文字发虚。
+
+### 4.4 颜色与对比度 (Color & Contrast)
+
+严禁使用纯黑色，采用灰度梯队以减轻视觉疲劳：
+
+- **一级文本** (标题/正文): `text-foreground` - `rgba(0, 0, 0, 0.88)` (亮色) / `rgba(255, 255, 255, 0.92)` (暗色)
+- **二级文本** (次要信息): `text-muted-foreground` - `rgba(0, 0, 0, 0.65)` (亮色) / `rgba(255, 255, 255, 0.65)` (暗色)  
+- **三级文本** (禁用/占位符): `text-muted` - 更淡的灰度
+
+### 4.5 性能与加载 (Performance)
+
+- ✅ 优先使用系统字体，避免外部 WebFont 加载延迟
+- ✅ 若必须使用自定义字体，仅允许 `.woff2` 格式
+- ✅ 添加 `font-display: swap;` 避免 FOIT (文字闪烁)
+- ✅ 中文字体必须子集化，体积 ≤ 200KB
+- ✅ 推荐使用 Google Fonts 或 Alibaba 免费方案
+

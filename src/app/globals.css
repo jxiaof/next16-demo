@@ -234,14 +234,34 @@
     @apply border-border outline-ring/50;
   }
   
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+  html {
+    /* 平滑滚动 */
+    scroll-behavior: smooth;
   }
   
-  /* 平滑滚动 */
-  html {
-    scroll-behavior: smooth;
+  body {
+    @apply bg-background text-foreground;
+    
+    /* ============================================
+     * 企业级字体渲染优化
+     * ============================================ */
+    
+    /* Mac 系统字体抗锯齿 - 使字体边缘更平滑 */
+    -webkit-font-smoothing: antialiased;
+    
+    /* Firefox 在 macOS 下的优化 */
+    -moz-osx-font-smoothing: grayscale;
+    
+    /* 文本渲染优化 - 增强可读性，提升中文显示质量 */
+    text-rendering: optimizeLegibility;
+    
+    /* 禁用移动设备横屏时的自动放大 - 避免意外的字体缩放 */
+    -webkit-text-size-adjust: 100%;
+    
+    /* OpenType 特性优化 
+     * rlig: 必需连字 (required ligatures)
+     * calt: 上下文交替形式 (contextual alternates) - 改善中文显示 */
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
   
   /* 选中文本样式 */
@@ -349,6 +369,75 @@
  * 工具类扩展
  * ============================================ */
 @layer utilities {
+  /* ============================================
+   * 排版规范工具类 - 企业级字体应用
+   * ============================================ */
+  
+  /* 标题级别 - 遵循 4px 基数倍数原则 */
+  .heading-1 {
+    @apply text-3xl font-semibold leading-tight;
+    /* 32px, weight 600, line-height 1.2 */
+  }
+  
+  .heading-2 {
+    @apply text-2xl font-semibold leading-snug;
+    /* 24px, weight 600, line-height 1.3 */
+  }
+  
+  .heading-3 {
+    @apply text-xl font-semibold;
+    /* 20px, weight 600, line-height 1.5 (default) */
+  }
+  
+  /* 正文级别 */
+  .body-emphasis {
+    @apply text-base font-medium leading-relaxed;
+    /* 16px, weight 500, line-height 1.625 */
+  }
+  
+  .body-normal {
+    @apply text-sm leading-relaxed;
+    /* 14px, weight 400, line-height 1.625 */
+  }
+  
+  .body-small {
+    @apply text-xs leading-normal;
+    /* 12px, weight 400, line-height 1.5 */
+  }
+  
+  /* 数值与代码 - 强制等宽字体 */
+  .font-numeric {
+    @apply font-mono tabular-nums;
+    /* 使用 Tabular Numerals 确保数字等宽 */
+  }
+  
+  .font-code {
+    @apply font-mono;
+    /* 代码段落专用等宽字体 */
+  }
+  
+  /* 颜色与对比度规范 */
+  .text-emphasis {
+    @apply text-foreground;
+    /* 一级文本 - 标题/正文 */
+  }
+  
+  .text-secondary {
+    @apply text-muted-foreground;
+    /* 二级文本 - 次要信息/描述 */
+  }
+  
+  .text-tertiary {
+    @apply text-muted;
+    /* 三级文本 - 禁用/占位符/帮助文字 */
+  }
+  
+  /* 无障碍增强 - 提高可读性 */
+  .text-high-contrast {
+    @apply font-semibold text-foreground;
+    /* 用于需要强调的关键信息 */
+  }
+  
   /* 动画类 */
   .animate-fade-in {
     animation: fade-in var(--transition-normal) var(--ease-out);
