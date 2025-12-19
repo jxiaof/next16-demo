@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Navbar, Footer, ThemeProvider } from "@/components/shared";
+import { ThemeProvider, Navbar, Footer } from "@/components/shared";
 import { AuthProvider } from "@/features/auth";
 
 /**
