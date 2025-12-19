@@ -30,7 +30,7 @@ COPY --from=deps /app/node_modules ./node_modules
 # 复制源代码
 COPY . .
 
-# 移除 pnpm-workspace.yaml 避免 workspace 错误
+# 移除 pnpm-workspace.yaml 避免 workspace 错误（必须在 COPY 之后）
 RUN rm -f pnpm-workspace.yaml
 
 # 构建应用

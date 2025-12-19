@@ -99,6 +99,12 @@ docker-build: ## 构建 Docker 镜像
 	docker tag $(DOCKER_IMAGE):$(DOCKER_TAG) $(DOCKER_IMAGE):latest
 	@echo "$(GREEN)✓ Docker build complete!$(NC)"
 
+docker-build-amd64: ## 构建 amd64 Docker 镜像
+	@echo "$(BLUE)🐳 Building Docker image: $(DOCKER_IMAGE):$(DOCKER_TAG)$(NC)"
+	docker build --platform linux/amd64 -f deploy/Dockerfile -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
+	docker tag $(DOCKER_IMAGE):$(DOCKER_TAG) $(DOCKER_IMAGE):latest
+	@echo "$(GREEN)✓ Docker build complete!$(NC)"
+
 docker-build-dev: ## 构建开发 Docker 镜像
 	@echo "$(BLUE)🐳 Building dev Docker image: $(DOCKER_IMAGE):dev$(NC)"
 	docker build -f deploy/Dockerfile.dev -t $(DOCKER_IMAGE):dev .
