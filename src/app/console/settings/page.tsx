@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   User,
   Lock,
   ArrowLeft,
-  CheckCircle,
   ChevronRight,
-  Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { useAuth } from "@/features/auth";

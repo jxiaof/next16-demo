@@ -116,11 +116,11 @@ export default function TypographyPage() {
                 <ul className="mt-2 space-y-1 text-muted-foreground">
                   <li>
                     • 方法 1: 直接使用 Tailwind 类
-                    <code className="ml-2 text-xs">className="text-sm leading-relaxed"</code>
+                    <code className="ml-2 text-xs">className=&quot;text-sm leading-relaxed&quot;</code>
                   </li>
                   <li>
                     • 方法 2: 使用工具函数
-                    <code className="ml-2 text-xs">typographyClass("body-normal")</code>
+                    <code className="ml-2 text-xs">typographyClass(&quot;body-normal&quot;)</code>
                   </li>
                   <li>
                     • 方法 3: 使用 Hook

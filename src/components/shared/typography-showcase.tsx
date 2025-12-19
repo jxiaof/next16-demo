@@ -140,7 +140,7 @@ export function TypographyShowcase() {
               代码段落 (Code)
             </label>
             <code className={`rounded bg-muted p-2 ${monospace("code")}`}>
-              const greeting = "Hello, Coconut!";
+              const greeting = &quot;Hello, Coconut!&quot;;
             </code>
           </div>
 
@@ -214,7 +214,7 @@ export function TypographyShowcase() {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(TYPOGRAPHY_SCALE).map(([key, value]: any) => (
+              {Object.entries(TYPOGRAPHY_SCALE).map(([key, value]: [string, Record<string, unknown>]) => (
                 <tr key={key} className="border-b border-border hover:bg-secondary">
                   <td className="px-4 py-2 font-semibold">{value.cssClass}</td>
                   <td className="px-4 py-2">{value.fontSize}</td>
@@ -247,7 +247,7 @@ export function TypographyShowcase() {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(COLOR_HIERARCHY).map(([key, value]: any) => (
+              {Object.entries(COLOR_HIERARCHY).map(([key, value]: [string, Record<string, unknown>]) => (
                 <tr key={key} className="border-b border-border">
                   <td className="px-4 py-2 font-semibold">{key}</td>
                   <td className="px-4 py-2 font-mono text-xs">{value.light}</td>
