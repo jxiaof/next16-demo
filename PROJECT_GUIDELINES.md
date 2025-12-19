@@ -102,3 +102,112 @@ body {
 - ✅ 中文字体必须子集化，体积 ≤ 200KB
 - ✅ 推荐使用 Google Fonts 或 Alibaba 免费方案
 
+### 4.6 实施检查清单 (Checklist)
+
+- [ ] 是否在 Mac 与 Windows 下检查过字体粗细？
+- [ ] 行高是否严格按表格执行？  
+- [ ] 所有数值/代码是否使用 `font-mono`？
+- [ ] 链接/按钮点击态是否保持字体颜色一致性？
+- [ ] 移动端是否测试过字体缩放？
+
+## 5. H5 兼容性与移动端规范
+
+### 5.1 视口配置 (Viewport)
+
+所有页面必须在 `<head>` 中包含正确的视口配置，通过 Next.js `metadata` API 设置。
+
+```typescript
+export const metadata: Metadata = {
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover",
+    userScalable: false,
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+  },
+};
+```
+
+### 5.2 触摸与交互规范 (Touch & Interaction)
+
+| 规则 | 标准 | 实现方案 |
+|-----|------|--------|
+| **按钮最小点击区域** | 44×44px | 使用 `touch-target` 或 `h-11 w-11` 或更大 |
+| **按钮间距** | ≥8px | 使用 `gap-2` 或 `gap-3` |
+| **长按反馈** | 需要视觉反馈 | 使用 `active:scale-[0.98]` |
+| **双击缩放禁用** | `user-scalable=no` | 已在 viewport 配置中 |
+| **链接点击区域扩展** | 周围 8px | 使用 `px-3 py-2.5` 或 `touch-target` |
+| **禁用长按菜单** | 移除原生菜单 | 使用 `-webkit-touch-callout: none` |
+
+### 5.3 字体与输入框优化 (Mobile Typography)
+
+**关键原则**:
+- 所有输入框基础字号 ≥ 16px，防止 iOS Safari 自动放大
+- 禁用输入框的原生样式 (`-webkit-appearance: none`)
+- 移除 iOS tap highlight
+
+```css
+/* 输入框防止自动放大 */
+input, textarea, select {
+  font-size: 16px; /* >= 16px */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* 移动端响应式字号 */
+@media (max-width: 640px) {
+  h1 { @apply text-2xl; }    /* 32px → 24px */
+  h2 { @apply text-xl; }     /* 24px → 20px */
+  h3 { @apply text-lg; }     /* 20px → 18px */
+}
+```
+
+### 5.4 安全区域适配 (iOS Notch & Home Indicator)
+
+使用 CSS 环境变量适配 iOS 刘海屏和 Home Indicator：
+
+```css
+.safe-top { @apply pt-[env(safe-area-inset-top)]; }
+.safe-bottom { @apply pb-[env(safe-area-inset-bottom)]; }
+.safe-left { @apply pl-[env(safe-area-inset-left)]; }
+.safe-right { @apply pr-[env(safe-area-inset-right)]; }
+```
+
+应用方式：
+- 导航栏顶部: `<header className="safe-top">...</header>`
+- 底部导航: `<footer className="safe-bottom">...</footer>`
+
+### 5.5 性能优化 (Mobile Performance)
+
+- ✅ **图片**: 使用 Next.js `<Image />` 组件，启用 `priority` 和 `placeholder`
+- ✅ **CSS**: Tailwind JIT 编译，产生最小 CSS 体积
+- ✅ **重排**: 避免动态高度变化，使用固定尺寸
+- ✅ **懒加载**: 使用 `loading="lazy"` 延迟加载图片
+- ✅ **防抖节流**: 表单提交、滚动事件使用防抖/节流
+
+### 5.6 响应式设计断点 (Responsive Breakpoints)
+
+| 设备 | Tailwind 前缀 | CSS 范围 | 应用场景 |
+|-----|-------------|---------|--------|
+| **手机竖屏** | None | < 640px | 单列布局，堆叠组件 |
+| **手机横屏** | `sm` | ≥ 640px | 两列布局，紧凑间距 |
+| **平板** | `md` | ≥ 768px | 三列布局，正常间距 |
+| **桌面** | `lg`/`xl` | ≥ 1024px | 多列布局，大间距 |
+
+### 5.7 H5 检查清单 (Checklist)
+
+- [ ] 所有按钮/链接 ≥ 44×44px，或有充分的 padding
+- [ ] 输入框字号 ≥ 16px（防止 iOS 自动放大）
+- [ ] 内容宽度使用 `max-w-5xl` 限制，防止过度拉伸
+- [ ] 顶部导航栏预留安全区（`safe-top`）
+- [ ] 底部操作栏预留安全区（`safe-bottom`）
+- [ ] 表单有明显的 `:focus` 和 `:active` 反馈
+- [ ] 图片使用 Next.js `<Image />` 并启用响应式
+- [ ] 触摸目标间距 ≥ 8px
+- [ ] 在真机上测试竖屏和横屏模式
+- [ ] 在 2G/3G 网络下测试加载速度
+

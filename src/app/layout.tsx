@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar, Footer, ThemeProvider } from "@/components/shared";
@@ -28,6 +28,21 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Coconut - 企业级解决方案",
   description: "专业的企业级解决方案，助力您的业务增长",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+};
+
+/* H5 兼容性视口配置 (Next.js 14+) */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",           /* iOS 刘海屏适配 */
+  userScalable: false,
+  themeColor: "#f97316",          /* 主橙色 */
 };
 
 export default function RootLayout({

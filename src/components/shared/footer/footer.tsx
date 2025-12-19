@@ -3,7 +3,7 @@ import { Github, Twitter, Mail } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t bg-muted/30">
+    <footer className="border-t bg-muted/30 safe-bottom">
       <div className="mx-auto max-w-5xl px-4 py-8">
         {/* 移动端：垂直布局 / 桌面端：水平布局 */}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
