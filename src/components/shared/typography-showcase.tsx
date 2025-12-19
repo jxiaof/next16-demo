@@ -9,7 +9,7 @@
  */
 
 import { useTypography } from "@/lib/hooks/use-typography";
-import { TYPOGRAPHY_SCALE, COLOR_HIERARCHY } from "@/lib/typography";
+import { TYPOGRAPHY_SCALE, COLOR_HIERARCHY, type TypographyScaleEntry, type ColorHierarchyEntry } from "@/lib/typography";
 
 /**
  * 排版规范展示
@@ -214,17 +214,20 @@ export function TypographyShowcase() {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(TYPOGRAPHY_SCALE).map(([key, value]: [string, Record<string, unknown>]) => (
-                <tr key={key} className="border-b border-border hover:bg-secondary">
-                  <td className="px-4 py-2 font-semibold">{value.cssClass}</td>
-                  <td className="px-4 py-2">{value.fontSize}</td>
-                  <td className="px-4 py-2">{value.lineHeight}</td>
-                  <td className="px-4 py-2">{value.fontWeight}</td>
-                  <td className="px-4 py-2 text-sm text-muted-foreground">
-                    {value.description}
-                  </td>
-                </tr>
-              ))}
+              {Object.entries(TYPOGRAPHY_SCALE).map(([key, value]) => {
+                const entry = value as TypographyScaleEntry;
+                return (
+                  <tr key={key} className="border-b border-border hover:bg-secondary">
+                    <td className="px-4 py-2 font-semibold">{entry.cssClass}</td>
+                    <td className="px-4 py-2">{entry.fontSize}</td>
+                    <td className="px-4 py-2">{entry.lineHeight}</td>
+                    <td className="px-4 py-2">{entry.fontWeight}</td>
+                    <td className="px-4 py-2 text-sm text-muted-foreground">
+                      {entry.description}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -247,16 +250,19 @@ export function TypographyShowcase() {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(COLOR_HIERARCHY).map(([key, value]: [string, Record<string, unknown>]) => (
-                <tr key={key} className="border-b border-border">
-                  <td className="px-4 py-2 font-semibold">{key}</td>
-                  <td className="px-4 py-2 font-mono text-xs">{value.light}</td>
-                  <td className="px-4 py-2 font-mono text-xs">{value.dark}</td>
-                  <td className="px-4 py-2 text-sm text-muted-foreground">
-                    {value.usage}
-                  </td>
-                </tr>
-              ))}
+              {Object.entries(COLOR_HIERARCHY).map(([key, value]) => {
+                const entry = value as ColorHierarchyEntry;
+                return (
+                  <tr key={key} className="border-b border-border">
+                    <td className="px-4 py-2 font-semibold">{key}</td>
+                    <td className="px-4 py-2 font-mono text-xs">{entry.light}</td>
+                    <td className="px-4 py-2 font-mono text-xs">{entry.dark}</td>
+                    <td className="px-4 py-2 text-sm text-muted-foreground">
+                      {entry.usage}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

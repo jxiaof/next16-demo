@@ -1,0 +1,121 @@
+# ============================================
+# Kubernetes RBAC Configuration
+# ============================================
+
+# Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: coconut-oil-sa
+  namespace: default
+  labels:
+    app: coconut-oil
+
+---
+# Role for pod-level permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: coconut-oil-role
+  namespace: default
+spec:
+  rules:
+    # ConfigMap 读取权限
+    - apiGroups: [""]
+      resources: ["configmaps"]
+      verbs: ["get", "list", "watch"]
+    
+    # Secret 读取权限
+    - apiGroups: [""]
+      resources: ["secrets"]
+      verbs: ["get", "list"]
+    
+    # Pod 信息读取
+    - apiGroups: [""]
+      resources: ["pods"]
+      verbs: ["get", "list"]
+
+---
+# RoleBinding to attach role to service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: coconut-oil-rolebinding
+  namespace: default
+spec:
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: coconut-oil-role
+  subjects:
+    - kind: ServiceAccount
+      name: coconut-oil-sa
+      namespace: default
+
+---
+# Network Policy (可选，增强安全性)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: coconut-oil-netpol
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: coconut-oil
+      tier: frontend
+  policyTypes:
+    - Ingress
+    - Egress
+  
+  ingress:
+    # 允许来自 Ingress 控制器的流量
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3000
+    
+    # 允许来自同 namespace 的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: coconut-oil
+      ports:
+        - protocol: TCP
+          port: 3000
+  
+  egress:
+    # 允许 DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+    
+    # 允许连接到数据库
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    
+    # 允许连接到 Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    
+    # 允许对外 HTTPS 请求
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443

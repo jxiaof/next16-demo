@@ -1,0 +1,38 @@
+# ============================================
+# Development Dockerfile for Next.js 16
+# Hot reload, debugging support
+# ============================================
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# 设置环境变量
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# 安装 pnpm 和开发工具
+RUN npm install -g pnpm@9 && \
+    apk add --no-cache dumb-init
+
+# 复制 package 文件
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# 安装所有依赖（包括 devDependencies）
+RUN pnpm install --frozen-lockfile
+
+# 复制源代码
+COPY . .
+
+# 创建非 root 用户（可选）
+# RUN addgroup --system --gid 1001 nodejs && \
+#     adduser --system --uid 1001 nextjs && \
+#     chown -R nextjs:nodejs /app
+# USER nextjs
+
+# 暴露端口
+EXPOSE 3000
+
+# 启动 dev 服务器
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["pnpm", "dev"]

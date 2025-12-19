@@ -1,0 +1,235 @@
+# ============================================
+# Kubernetes Deployment for Coconut Oil
+# Production-ready configuration
+# ============================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coconut-oil-app
+  namespace: default
+  labels:
+    app: coconut-oil
+    version: v1
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: coconut-oil
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: coconut-oil
+        tier: frontend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+    spec:
+      # Pod disruption budget for high availability
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - coconut-oil
+                topologyKey: kubernetes.io/hostname
+      
+      # Service account
+      serviceAccountName: coconut-oil-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+
+      containers:
+        - name: coconut-oil
+          image: coconut-oil:latest
+          imagePullPolicy: Always
+          
+          # 端口
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          
+          # 环境变量
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: NEXT_TELEMETRY_DISABLED
+              value: "1"
+            - name: PORT
+              value: "3000"
+            
+            # 数据库配置（从 ConfigMap 和 Secret）
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: coconut-oil-secrets
+                  key: database-url
+            
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: coconut-oil-secrets
+                  key: redis-url
+            
+            # 应用配置
+            - name: NEXT_PUBLIC_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: coconut-oil-config
+                  key: api-url
+            
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: coconut-oil-config
+                  key: log-level
+                  optional: true
+          
+          # 资源限制和请求
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          
+          # 健康检查
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          
+          # 启动探针（可选，K8s 1.18+）
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 30
+          
+          # 安全上下文
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+          
+          # 存储卷挂载
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: cache
+              mountPath: /app/.next/cache
+          
+          # 日志输出
+          stdout: true
+          stderr: true
+      
+      # 存储卷定义
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: cache
+          emptyDir: {}
+      
+      # 终止期限
+      terminationGracePeriodSeconds: 30
+      
+      # DNS policy
+      dnsPolicy: ClusterFirst
+      
+      # Restart policy
+      restartPolicy: Always
+      
+      # Image pull secrets（如需要）
+      # imagePullSecrets:
+      #   - name: docker-registry-secret
+
+---
+# Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: coconut-oil-hpa
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: coconut-oil-app
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          percent: 100
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          percent: 50
+          periodSeconds: 60
+
+---
+# Pod Disruption Budget (高可用性)
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: coconut-oil-pdb
+  namespace: default
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: coconut-oil
+      tier: frontend

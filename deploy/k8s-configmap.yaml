@@ -1,0 +1,67 @@
+# ============================================
+# Kubernetes ConfigMap for Application Config
+# ============================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coconut-oil-config
+  namespace: default
+  labels:
+    app: coconut-oil
+data:
+  # API 配置
+  api-url: "https://api.example.com"
+  api-timeout: "30000"
+  
+  # 日志配置
+  log-level: "info"
+  log-format: "json"
+  
+  # 应用配置
+  environment: "production"
+  debug: "false"
+  
+  # 缓存配置
+  cache-ttl: "3600"
+  cache-max-size: "1000"
+  
+  # 安全配置
+  enable-cors: "true"
+  cors-origin: "https://example.com"
+  
+  # Next.js 配置
+  next-telemetry-disabled: "1"
+
+---
+# 用于敏感配置的 Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: coconut-oil-secrets
+  namespace: default
+  labels:
+    app: coconut-oil
+type: Opaque
+stringData:
+  # 数据库 URL
+  database-url: "postgresql://user:password@postgres:5432/coconut_db"
+  
+  # Redis URL
+  redis-url: "redis://:password@redis:6379/0"
+  
+  # JWT Secret
+  jwt-secret: "your-jwt-secret-key-change-this-in-production"
+  
+  # Session Secret
+  session-secret: "your-session-secret-key-change-this-in-production"
+  
+  # 第三方 API Keys
+  # sendgrid-key: "your-sendgrid-api-key"
+  # stripe-key: "your-stripe-api-key"
+  
+  # 注意：这些值应该通过以下方式提供：
+  # 1. 使用 kubectl create secret generic
+  # 2. 使用 Sealed Secrets 或 External Secrets Operator
+  # 3. 使用 Vault
+  # 绝不要在 Git 中提交实际的密钥值

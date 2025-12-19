@@ -26,6 +26,18 @@ export const FONT_FAMILY = {
 } as const;
 
 /**
+ * 字阶对象的值类型定义
+ */
+export type TypographyScaleEntry = {
+  fontSize: string;
+  lineHeight: number;
+  fontWeight: number;
+  cssClass: string;
+  tailwind: string;
+  description: string;
+};
+
+/**
  * 字阶系统 (Typography Scale)
  * 基于 4px 基数的倍数关系，确保视觉节奏严谨
  */
@@ -90,6 +102,15 @@ export const TYPOGRAPHY_SCALE = {
     description: "表单提示文字、页脚、标签、徽章",
   },
 } as const;
+
+/**
+ * 颜色等级对象的值类型定义
+ */
+export type ColorHierarchyEntry = {
+  light: string;
+  dark: string;
+  usage: string;
+};
 
 /**
  * 颜色与对比度规范 (Color & Contrast)

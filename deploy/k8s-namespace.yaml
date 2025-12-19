@@ -1,0 +1,47 @@
+# ============================================
+# Kubernetes Namespace Configuration
+# ============================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: coconut-oil
+  labels:
+    name: coconut-oil
+    environment: production
+  annotations:
+    description: "Coconut Oil Application Namespace"
+
+---
+# Resource Quota (限制命名空间资源使用)
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: coconut-oil-quota
+  namespace: coconut-oil
+spec:
+  hard:
+    requests.cpu: "10"
+    requests.memory: "20Gi"
+    limits.cpu: "20"
+    limits.memory: "40Gi"
+    pods: "100"
+    services: "10"
+    persistentvolumeclaims: "10"
+
+---
+# Network Policy (命名空间级别)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-only
+  namespace: coconut-oil
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx

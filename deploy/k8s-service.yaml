@@ -1,0 +1,78 @@
+# ============================================
+# Kubernetes Service Configuration
+# ============================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: coconut-oil-service
+  namespace: default
+  labels:
+    app: coconut-oil
+  annotations:
+    description: "Coconut Oil Application Service"
+spec:
+  type: ClusterIP
+  selector:
+    app: coconut-oil
+    tier: frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+
+---
+# Headless Service (用于 StatefulSet 等)
+apiVersion: v1
+kind: Service
+metadata:
+  name: coconut-oil-headless
+  namespace: default
+  labels:
+    app: coconut-oil
+spec:
+  clusterIP: None
+  selector:
+    app: coconut-oil
+    tier: frontend
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      protocol: TCP
+
+---
+# LoadBalancer Service (可选，用于外部访问)
+apiVersion: v1
+kind: Service
+metadata:
+  name: coconut-oil-lb
+  namespace: default
+  labels:
+    app: coconut-oil
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    # 或 GCP:
+    # cloud.google.com/neg: '{"ingress": true}'
+spec:
+  type: LoadBalancer
+  selector:
+    app: coconut-oil
+    tier: frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: 3000
+      protocol: TCP
+  # 限制可以访问 LoadBalancer 的 IP
+  # loadBalancerSourceRanges:
+  #   - 203.0.113.0/24
