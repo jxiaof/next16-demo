@@ -214,6 +214,176 @@ src/app/
   }
   ```
 
+## 4. UI 组件库规范 (shadcn/ui)
+
+### 4.1 概述
+
+本项目使用 **shadcn/ui** 作为主要的 UI 组件库，这是一个基于 Radix UI 和 Tailwind CSS 的高质量组件合集。所有原子组件（Button、Input、Tabs 等）都应从 shadcn/ui 安装，确保设计一致性和可维护性。
+
+### 4.2 组件分类与使用原则
+
+#### 原子组件 (`src/components/ui/`)
+这些是由 shadcn/ui 提供的基础组件，通过 CLI 安装。
+
+| 组件 | 用途 | H5 适配 |
+|-----|------|--------|
+| **Button** | 所有交互按钮 | ✅ 44×44px 最小点击区域 |
+| **Input** | 表单输入框 | ✅ 16px 最小字号，禁用自动放大 |
+| **Card** | 卡片容器 | ✅ 响应式内间距 |
+| **Tabs** | 标签导航 | ✅ 上下布局友好，移动端优先 |
+| **Select** | 下拉选择 | ✅ 原生适配移动端 |
+| **Dialog/Modal** | 模态框 | ✅ 全屏适配，避免超出视口 |
+
+#### 业务组件 (`src/components/shared/`)
+基于原子组件的合成组件，实现特定的业务需求。
+
+例如：`SettingsTabs`、`Navbar`、`Footer` 等。
+
+### 4.3 安装与维护
+
+**安装新组件的标准流程**：
+
+```bash
+# 使用最新的 shadcn CLI
+npx shadcn@latest add <component-name> --yes
+
+# 示例：安装 Dialog 组件
+npx shadcn@latest add dialog --yes
+```
+
+**更新现有组件**：
+
+```bash
+# 覆盖式更新（获取官方最新版本）
+npx shadcn@latest add <component-name> --overwrite --yes
+```
+
+**常用组件清单**：
+- `button` - 按钮
+- `input` - 输入框
+- `card` - 卡片
+- `tabs` - 标签页
+- `select` - 下拉选择
+- `dialog` - 对话框
+- `form` - 表单容器
+- `label` - 表单标签
+- `textarea` - 多行文本框
+- `checkbox` - 复选框
+
+### 4.4 H5 友好的组件配置
+
+所有 UI 组件应遵循以下 H5 适配原则：
+
+#### 最小点击区域
+按钮和交互元素必须满足 **44×44px** 的最小点击区域：
+
+```tsx
+// ❌ 不推荐
+<Button size="sm" className="h-8 w-8">小按钮</Button>
+
+// ✅ 推荐
+<Button size="default" className="h-11 w-11">
+  标准按钮
+</Button>
+```
+
+#### 输入框优化
+输入框必须采用 **16px** 及以上的字号，防止 iOS Safari 自动放大：
+
+```tsx
+// ❌ 不推荐（字号过小）
+<Input className="text-sm" placeholder="输入..." />
+
+// ✅ 推荐（字号充分）
+<Input className="text-base" placeholder="输入..." />
+```
+
+#### 响应式布局
+使用 Tailwind 的响应式前缀确保在各屏幕尺寸下都能良好展示：
+
+```tsx
+// ✅ 响应式标签页布局
+<Tabs defaultValue="tab1" className="w-full">
+  <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3">
+    {/* 移动端 2 列，平板 3 列 */}
+  </TabsList>
+</Tabs>
+```
+
+#### 触摸反馈
+所有可交互的元素应提供明显的触摸反馈：
+
+```tsx
+// ✅ 提供 active 态反馈
+<button className="active:scale-[0.98] transition-transform">
+  点击反馈
+</button>
+```
+
+### 4.5 组件定制指南
+
+如需定制组件样式，遵循以下原则：
+
+1. **不修改原子组件** - shadcn/ui 组件应保持原始状态
+2. **通过业务组件包装** - 创建新的业务组件来定制
+3. **使用 Tailwind 扩展** - 利用 `className` 进行样式调整
+
+```tsx
+// ❌ 错误：直接修改 src/components/ui/button.tsx
+// ❌ 不要这样做
+
+// ✅ 正确：创建业务组件
+import { Button } from "@/components/ui";
+
+export function PrimaryButton(props) {
+  return (
+    <Button 
+      className="bg-gradient-to-r from-primary to-primary/80"
+      {...props}
+    />
+  );
+}
+```
+
+### 4.6 常见模式 - H5 友好的设置页面
+
+以 `SettingsTabs` 组件为例，展示 H5 友好的实现：
+
+```tsx
+import { SettingsTabs } from "@/components/shared";
+import { User, Lock } from "lucide-react";
+
+export function SettingsPage() {
+  return (
+    <SettingsTabs
+      tabs={[
+        {
+          id: "profile",
+          label: "个人资料",
+          description: "管理账户信息",
+          icon: User,
+          content: <ProfileForm />,
+        },
+        {
+          id: "password",
+          label: "修改密码",
+          description: "更新密码",
+          icon: Lock,
+          content: <PasswordForm />,
+        },
+      ]}
+      orientation="horizontal"  // 上下布局，H5 友好
+    />
+  );
+}
+```
+
+**H5 优势**：
+- ✅ 标签导航位于顶部，易于触摸
+- ✅ 内容区域占据整个宽度，充分利用屏幕
+- ✅ 横向滚动友好
+- ✅ 移动设备竖屏模式最优
+
 ## 5. 字体与排版规范
 
 ### 5.1 字体族配置 (Font Family)
