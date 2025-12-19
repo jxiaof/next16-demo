@@ -4,6 +4,10 @@ import { z } from "zod";
 const envSchema = z.object({
   // Database
   DATABASE_URL: z.string().url(),
+  DB_SSL: z
+    .string()
+    .default("false")
+    .transform((val) => val === "true"),
   DB_USER: z.string().default("postgres"),
   DB_PASSWORD: z.string().default("postgres"),
   DB_NAME: z.string().default("myapp_dev"),
