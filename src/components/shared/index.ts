@@ -3,3 +3,4 @@ export { Navbar, MobileNav, ThemeToggle } from "./header";
 export { Footer } from "./footer";
 export { ThemeProvider } from "./theme-provider";
 export { TypographyShowcase } from "./typography-showcase";
+export { SettingsTabs } from "./settings-tabs";
